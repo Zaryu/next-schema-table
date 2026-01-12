@@ -31,7 +31,7 @@ export default [
     },
   },
   {
-    files: ["src/lib/table/types.ts"],
+    files: ["src/**/types.ts"],
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
     },

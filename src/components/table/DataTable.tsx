@@ -81,8 +81,6 @@ export function DataTable<Schema extends z.ZodObject<any>>({
     handleDragEnd,
     handleDragCancel,
     isDragging,
-    data,
-    columnOrder,
   } = useDataTable(
     initialData,
     columns,

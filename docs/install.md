@@ -81,6 +81,7 @@ npx shadcn@latest add tabs
 npx shadcn@latest add dropdown-menu
 npx shadcn@latest add switch
 npx shadcn@latest add skeleton
+npx scadcn@latest add alert-dialog
 ```
 
 Optional components (for examples and advanced features):
@@ -89,7 +90,6 @@ Optional components (for examples and advanced features):
 npx shadcn@latest add checkbox
 npx shadcn@latest add badge
 npx shadcn@latest add card
-npx shadcn@latest add alert-dialog
 npx shadcn@latest add popover
 npx shadcn@latest add separator
 ```
@@ -438,6 +438,7 @@ To update to the latest version:
 To remove Next Schema Table:
 
 1. Delete the copied directories:
+
    - `src/components/table`
    - `src/hooks/useDataTable.ts`
    - `src/lib/table`

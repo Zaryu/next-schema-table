@@ -176,7 +176,7 @@ pnpm add zod @tanstack/react-table @tanstack/react-virtual @tanstack/react-pacer
 yarn add zod @tanstack/react-table @tanstack/react-virtual @tanstack/react-pacer nuqs @dnd-kit/core @dnd-kit/sortable @dnd-kit/utilities lucide-react
 ```
 
-See [INSTALL.md](./INSTALL.md) for complete installation instructions.
+See [INSTALL.md](./docs/install.md) for complete installation instructions.
 
 ### Basic Example
 
@@ -571,10 +571,9 @@ The library uses Zod schemas to:
 
 ## Examples
 
-Check out the [example](./src/example) directory for a complete implementation:
+Check out the [example](./demo/) directory for a complete implementation:
 
-- [columns.tsx](./src/example/columns.tsx) - Advanced column definitions with filters
-- [page.tsx](./src/example/page.tsx) - Complete page example with stats
+- [page.tsx](./demo/page.tsx) - Complete page example with columns definition and custom filtering components
 
 ## Contributing
 
@@ -590,6 +589,7 @@ Built with:
 
 - [TanStack Table](https://tanstack.com/table) - Headless table library
 - [TanStack Virtual](https://tanstack.com/virtual) - Virtual scrolling
+- [TanStack Pacer](https://tanstack.com/pacer) - Debounced URL Syncing
 - [Zod](https://zod.dev) - Schema validation
 - [nuqs](https://nuqs.47ng.com/) - Type-safe query string state
 
@@ -644,21 +644,6 @@ This library focuses on client-side table features. It does NOT include:
 - Excel/PDF export
 
 Many of these can be added on top of the library if needed.
-
-## Roadmap
-
-Potential future features (not committed):
-
-- [ ] Server-side pagination support
-- [ ] Column resizing
-- [ ] Export to CSV/Excel
-- [ ] Saved filters/views
-- [ ] Global search across all columns
-- [ ] Multi-column sorting
-- [ ] Row grouping
-- [ ] Expandable rows
-- [ ] Sticky headers
-- [ ] Footer with aggregations (sum, avg, etc.)
 
 ## Support
 
