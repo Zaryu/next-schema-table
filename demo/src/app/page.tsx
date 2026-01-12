@@ -649,7 +649,7 @@ function DemoPageContent() {
               </Button>
               <Button size="sm" asChild>
                 <a
-                  href="https://github.com/Zaryu/next-schema-table/tree/main/docsreadme"
+                  href="https://github.com/Zaryu/next-schema-table/blob/main/docs/README.md"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2"
