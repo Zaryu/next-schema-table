@@ -48,6 +48,7 @@ export function BulkActions<TData>({
     setIsExecuting(true);
     try {
       await action.action(selectedRows);
+      table.resetRowSelection();
     } finally {
       setIsExecuting(false);
       setActiveActionIndex(null);
@@ -146,7 +147,9 @@ export function BulkActions<TData>({
           >
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Confirm Action</AlertDialogTitle>
+                <AlertDialogTitle>
+                  {action.label || "Confirm Action"}
+                </AlertDialogTitle>
                 <AlertDialogDescription>
                   {action?.confirmMessage?.replace(
                     "{count}",

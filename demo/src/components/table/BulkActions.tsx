@@ -48,6 +48,7 @@ export function BulkActions<TData>({
     setIsExecuting(true);
     try {
       await action.action(selectedRows);
+      table.resetRowSelection();
     } finally {
       setIsExecuting(false);
       setActiveActionIndex(null);
