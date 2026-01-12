@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z, ZodAny } from "zod";
 import { Row, Column } from "@tanstack/react-table";
 
 export interface FilterComponentProps<T = unknown> {
@@ -9,12 +9,30 @@ export interface FilterComponentProps<T = unknown> {
   schemaType: "string" | "boolean" | "number" | "date" | "unknown";
 }
 
-export interface BulkAction<TData = any> {
+export interface BulkAction<TData = z.ZodObject<any>> {
   label: string;
   action: (rows: Row<TData>[]) => void | Promise<void>;
   variant?: "default" | "destructive";
   confirmMessage?: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  confirmBtnLabel?: string;
+  confirmComponent?: React.ComponentType<BulkActionConfirmProps<TData>>;
+  customDropdownItem?: React.ComponentType<BulkActionDropdownItemProps<TData>>;
+  icon?: React.ReactElement;
+  skipConfirm?: boolean;
+}
+
+export interface BulkActionConfirmProps<TData> {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  selectedCount: number;
+  selectedRows: Row<TData>[];
+}
+
+export interface BulkActionDropdownItemProps<TData> {
+  onClick: () => void;
+  selectedCount: number;
+  selectedRows: Row<TData>[];
 }
 
 /**

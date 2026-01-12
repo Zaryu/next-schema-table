@@ -13,8 +13,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 import { DatePicker } from "@/components/ui/date-picker";
-import type { FilterComponentProps, BulkAction } from "@/lib/table/types";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import type {
+  FilterComponentProps,
+  BulkAction,
+  BulkActionConfirmProps,
+  BulkActionDropdownItemProps,
+} from "@/lib/table/types";
 import {
   Shield,
   ShieldOff,
@@ -545,51 +562,153 @@ function getUserColumns(): ColumnDef<User>[] {
   ];
 }
 
+function CustomDeleteConfirm({
+  open,
+  onOpenChange,
+  onConfirm,
+  selectedCount,
+  selectedRows,
+}: BulkActionConfirmProps<User>) {
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-destructive">
+            Danger Zone
+          </AlertDialogTitle>
+          <AlertDialogDescription asChild>
+            <div>
+              <p>
+                You are about to permanently delete {selectedCount} user
+                {selectedCount === 1 ? "" : "s"}:
+              </p>
+              <ul className="mt-2 space-y-1 list-disc list-inside">
+                {selectedRows.slice(0, 3).map((row) => (
+                  <li key={row.original.id} className="text-sm font-medium">
+                    {row.original.name} ({row.original.email})
+                  </li>
+                ))}
+                {selectedCount > 3 && (
+                  <li className="text-sm">
+                    ...and {selectedCount - 3} more user
+                    {selectedCount - 3 === 1 ? "" : "s"}
+                  </li>
+                )}
+              </ul>
+              <p className="mt-3 text-destructive font-semibold">
+                This action cannot be undone!
+              </p>
+            </div>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={onConfirm}
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          >
+            Yes, Delete All
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function CustomDropdownItem({
+  onClick,
+  selectedCount,
+}: BulkActionDropdownItemProps<User>) {
+  return (
+    <DropdownMenuItem onClick={onClick} className="flex items-center gap-2">
+      <Mail className="h-4 w-4" />
+      <div className="flex flex-col">
+        <span>Send Email to All</span>
+        <span className="text-xs text-muted-foreground">
+          {selectedCount} recipient{selectedCount === 1 ? "" : "s"}
+        </span>
+      </div>
+    </DropdownMenuItem>
+  );
+}
+
 function getBulkActions(): BulkAction<User>[] {
   return [
     {
       label: "Make Admin",
       variant: "default",
-      icon: Shield,
+      icon: <Shield />,
       confirmMessage:
         "Are you sure you want to promote {count} users to admin?",
+      confirmBtnLabel: "Make Admin",
       action: async (rows) => {
         console.log(
           "Making admins:",
           rows.map((r) => r.original)
         );
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert(`Successfully promoted ${rows.length} users to admin!`);
+        toast.success(`Successfully promoted ${rows.length} users to admin!`);
       },
     },
     {
       label: "Remove Admin",
       variant: "default",
-      icon: ShieldOff,
+      icon: <ShieldOff />,
       confirmMessage:
         "Are you sure you want to remove admin rights from {count} users?",
+      confirmBtnLabel: "Remove Admin",
       action: async (rows) => {
         console.log(
           "Removing admin rights:",
           rows.map((r) => r.original)
         );
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert(`Successfully removed admin rights from ${rows.length} users!`);
+        toast.success(
+          `Successfully removed admin rights from ${rows.length} users!`
+        );
+      },
+    },
+    {
+      label: "Send Email",
+      variant: "default",
+      customDropdownItem: CustomDropdownItem,
+      confirmMessage: "Send email to {count} selected users?",
+      confirmBtnLabel: "Send Email",
+      action: async (rows) => {
+        console.log(
+          "Sending emails to:",
+          rows.map((r) => r.original.email)
+        );
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        toast.success(`Successfully sent email to ${rows.length} users!`);
       },
     },
     {
       label: "Delete Users",
       variant: "destructive",
-      icon: Trash2,
-      confirmMessage:
-        "Are you sure you want to permanently delete {count} users?",
+      icon: <Trash2 />,
+      confirmComponent: CustomDeleteConfirm,
       action: async (rows) => {
         console.log(
           "Deleting users:",
           rows.map((r) => r.original)
         );
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        alert(`Successfully deleted ${rows.length} users!`);
+        toast.success(`Successfully deleted ${rows.length} users!`);
+      },
+    },
+    {
+      label: "Export to CSV",
+      variant: "default",
+      icon: <ExternalLink />,
+      skipConfirm: true,
+      action: async (rows) => {
+        console.log(
+          "Exporting users:",
+          rows.map((r) => r.original)
+        );
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        toast.success(`Exported ${rows.length} users to CSV!`);
       },
     },
   ];
@@ -768,7 +887,9 @@ export default function DemoPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          Loading...
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          </div>
         </div>
       }
     >
