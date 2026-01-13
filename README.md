@@ -645,14 +645,4 @@ This library focuses on client-side table features. It does NOT include:
 
 Many of these can be added on top of the library if needed.
 
-## Support
-
-For issues and questions:
-
-- Open an issue on [GitHub Issues](https://github.com/yourusername/next-schema-table/issues)
-- Check existing issues for solutions
-- Provide a minimal reproduction example
-
----
-
 Made for the Next.js community
