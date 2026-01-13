@@ -48,7 +48,7 @@ const bulkActions: BulkAction<User>[] = [
   data={users}
   columns={columns}
   bulkActions={bulkActions}
-/>
+/>;
 ```
 
 ---
@@ -85,17 +85,17 @@ interface BulkActionDropdownItemProps<TData> {
 
 ### Properties
 
-| Property             | Type                                                         | Required | Description                                                                    |
-| -------------------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------------------------ |
-| `label`              | `string`                                                     | Yes      | Button text displayed to user                                                  |
-| `action`             | `(rows: Row<TData>[]) => void \| Promise<void>`              | Yes      | Function called when action is triggered                                       |
-| `variant`            | `"default" \| "destructive"`                                 | No       | Button style variant. Use `destructive` for dangerous actions                  |
-| `confirmMessage`     | `string`                                                     | No       | Simple confirmation dialog message. Use `{count}` placeholder                  |
-| `confirmBtnLabel`    | `string`                                                     | No       | Label for confirm button in default dialog                                     |
-| `confirmComponent`   | `React.ComponentType<BulkActionConfirmProps<TData>>`         | No       | Custom confirm dialog component. Overrides default dialog                      |
-| `customDropdownItem` | `React.ComponentType<BulkActionDropdownItemProps<TData>>`    | No       | Custom dropdown item component. Replaces default dropdown menu item            |
-| `icon`               | `React.ReactElement`                                         | No       | Icon element from lucide-react or similar                                      |
-| `skipConfirm`        | `boolean`                                                    | No       | If true, skips confirmation dialog and executes action immediately             |
+| Property             | Type                                                      | Required | Description                                                         |
+| -------------------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------------- |
+| `label`              | `string`                                                  | Yes      | Button text displayed to user                                       |
+| `action`             | `(rows: Row<TData>[]) => void \| Promise<void>`           | Yes      | Function called when action is triggered                            |
+| `variant`            | `"default" \| "destructive"`                              | No       | Button style variant. Use `destructive` for dangerous actions       |
+| `confirmMessage`     | `string`                                                  | No       | Simple confirmation dialog message. Use `{count}` placeholder       |
+| `confirmBtnLabel`    | `string`                                                  | No       | Label for confirm button in default dialog                          |
+| `confirmComponent`   | `React.ComponentType<BulkActionConfirmProps<TData>>`      | No       | Custom confirm dialog component. Overrides default dialog           |
+| `customDropdownItem` | `React.ComponentType<BulkActionDropdownItemProps<TData>>` | No       | Custom dropdown item component. Replaces default dropdown menu item |
+| `icon`               | `React.ReactElement`                                      | No       | Icon element from lucide-react or similar                           |
+| `skipConfirm`        | `boolean`                                                 | No       | If true, skips confirmation dialog and executes action immediately  |
 
 ---
 
@@ -239,6 +239,7 @@ const bulkActions: BulkAction<User>[] = [
 ### Custom Dropdown Item Props
 
 Your custom dropdown component receives:
+
 - `onClick`: Function to trigger the action (will open confirm dialog if configured)
 - `selectedCount`: Number of selected rows
 - `selectedRows`: Array of selected Row objects with full data access
@@ -333,6 +334,7 @@ const bulkActions: BulkAction<User>[] = [
 ### Custom Confirm Dialog Props
 
 Your custom confirm component receives:
+
 - `open`: Boolean indicating if dialog is open
 - `onOpenChange`: Function to control dialog visibility
 - `onConfirm`: Function to call when user confirms (executes the action)
@@ -342,6 +344,7 @@ Your custom confirm component receives:
 ### When to Use Custom Confirm Dialogs
 
 Use custom confirm dialogs when you need:
+
 - List of affected items with details
 - Additional input fields or options
 - Complex validation or warnings
@@ -371,12 +374,14 @@ For non-destructive actions like exports or downloads, you can skip the confirma
 ### When to Skip Confirmation
 
 Skip confirmation for:
+
 - Export/download actions
 - Non-destructive operations
 - Quick actions that can be easily undone
 - Operations that provide immediate feedback
 
 **Never skip confirmation for:**
+
 - Deleting data
 - Modifying important records
 - Actions that cannot be undone
@@ -386,14 +391,42 @@ Skip confirmation for:
 
 ## Row Selection
 
-The table automatically adds a checkbox column when bulk actions are provided.
-
 ### Select Column
 
-The select column is added automatically with:
-- Header checkbox to select/deselect all rows on current page
-- Row checkboxes for individual selection
-- Indeterminate state when some rows are selected
+In order to get the selected Count, you`ll need to create a select column in cour columnsDef like this example:
+
+```tsx
+{
+  id: "select",
+  header: ({ table }) => (
+    <Checkbox
+      checked={
+        table.getIsAllPageRowsSelected() ||
+        (table.getIsSomePageRowsSelected() && "indeterminate")
+      }
+      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+      aria-label="Select all"
+    />
+  ),
+  cell: ({ row }) => (
+    <Checkbox
+      checked={row.getIsSelected()}
+      onCheckedChange={(value) => row.toggleSelected(!!value)}
+      aria-label="Select row"
+    />
+  ),
+  enableSorting: false,
+  enableHiding: false,
+  enableColumnFilter: false,
+  meta: {
+    excludeFromColumnOrder: true,
+  },
+}
+```
+
+This will generate select fields in each row also with a select all functionality at the top.
+
+In the future, i will eventually add a option, that you can activate it with just one prop, or when bulk action are defined
 
 ### Accessing Selected Rows
 
@@ -402,27 +435,12 @@ In your action handler, you receive an array of TanStack Table `Row` objects:
 ```tsx
 action: (rows) => {
   rows.forEach((row) => {
-    console.log(row.original);  // Your data object
-    console.log(row.id);        // Row ID
-    console.log(row.index);     // Row index
+    console.log(row.original); // Your data object
+    console.log(row.id); // Row ID
+    console.log(row.index); // Row index
   });
-}
+};
 ```
-
-### Disabling Row Selection
-
-Row selection is only enabled when `bulkActions` are provided. To disable:
-
-```tsx
-<DataTable
-  schema={schema}
-  data={data}
-  columns={columns}
-  // Don't provide bulkActions prop
-/>
-```
-
----
 
 ## Multiple Actions
 
@@ -558,11 +576,13 @@ Use `confirmMessage` for delete, archive, or other dangerous operations:
 Users should understand exactly what will happen:
 
 **Good:**
+
 - "Delete Users"
 - "Send Welcome Email"
 - "Export to CSV"
 
 **Bad:**
+
 - "Action"
 - "Process"
 - "Do Thing"
@@ -646,7 +666,11 @@ import { toast } from "sonner";
 Here's a comprehensive example using all bulk action features:
 
 ```tsx
-import { BulkAction, BulkActionConfirmProps, BulkActionDropdownItemProps } from "@/lib/table/types";
+import {
+  BulkAction,
+  BulkActionConfirmProps,
+  BulkActionDropdownItemProps,
+} from "@/lib/table/types";
 import { Trash2, Mail, Shield, ShieldOff, Download } from "lucide-react";
 import { toast } from "sonner";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";

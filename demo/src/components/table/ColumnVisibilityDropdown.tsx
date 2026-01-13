@@ -28,7 +28,7 @@ const columnLabels: Record<string, string> = {
 
 export function ColumnVisibilityDropdown({ table, label }: Props) {
   const hidableColumns = table
-    .getAllColumns()
+    .getAllLeafColumns()
     .filter((column) => column.getCanHide());
 
   const [updateCounter, setUpdateCounter] = React.useState(0);
@@ -60,7 +60,7 @@ export function ColumnVisibilityDropdown({ table, label }: Props) {
                 setUpdateCounter((prev) => prev + 1);
               }}
             >
-              {columnLabels[column.id] || column.id}
+              {column.columnDef.meta?.label || column.id}
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>

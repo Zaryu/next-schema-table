@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo, useCallback } from "react";
+import { Suspense, useMemo, useCallback, useState, useEffect } from "react";
 import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
@@ -333,6 +333,7 @@ function getUserColumns(): ColumnDef<User>[] {
       enableSorting: true,
       enableHiding: true,
       meta: {
+        label: "Name",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -346,7 +347,6 @@ function getUserColumns(): ColumnDef<User>[] {
             onChange={(e) => onChange(e.target.value)}
           />
         ),
-        filterLabel: "Name",
       },
     },
     {
@@ -365,6 +365,7 @@ function getUserColumns(): ColumnDef<User>[] {
       enableSorting: true,
       enableHiding: true,
       meta: {
+        label: "Email",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -382,7 +383,6 @@ function getUserColumns(): ColumnDef<User>[] {
             data-1p-ignore="true"
           />
         ),
-        filterLabel: "Email",
       },
     },
     {
@@ -398,6 +398,7 @@ function getUserColumns(): ColumnDef<User>[] {
       enableSorting: true,
       enableHiding: true,
       meta: {
+        label: "Provider",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -427,7 +428,6 @@ function getUserColumns(): ColumnDef<User>[] {
             </Select>
           );
         },
-        filterLabel: "Provider",
       },
     },
     {
@@ -454,6 +454,7 @@ function getUserColumns(): ColumnDef<User>[] {
         return cellValue === (filterValue === "true");
       },
       meta: {
+        label: "Status",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -481,7 +482,6 @@ function getUserColumns(): ColumnDef<User>[] {
             </SelectContent>
           </Select>
         ),
-        filterLabel: "Status",
       },
     },
     {
@@ -510,6 +510,7 @@ function getUserColumns(): ColumnDef<User>[] {
         );
       },
       meta: {
+        label: "Created At",
         enableColumnOrdering: true,
         FilterComponent: ({
           onChange,
@@ -529,7 +530,6 @@ function getUserColumns(): ColumnDef<User>[] {
             className="max-w-xs mr-4 w-20 md:w-54"
           />
         ),
-        filterLabel: "Created At",
       },
     },
     {
@@ -718,6 +718,11 @@ function DemoPageContent() {
   const columns = useMemo(() => getUserColumns(), []);
   const bulkActions = useMemo(() => getBulkActions(), []);
   const { theme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleRowOrderChange = useCallback((newData: User[]) => {
     console.log("Row order changed:", newData);
@@ -778,7 +783,9 @@ function DemoPageContent() {
                 </a>
               </Button>
               <Button variant="ghost" size="sm" onClick={toggleTheme}>
-                {theme === "light" ? (
+                {!isMounted ? (
+                  <Monitor className="h-5 w-5" />
+                ) : theme === "light" ? (
                   <Moon className="h-5 w-5" />
                 ) : theme === "dark" ? (
                   <Sun className="h-5 w-5" />

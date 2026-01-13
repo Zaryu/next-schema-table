@@ -80,7 +80,7 @@ export function TableFilter({
 
   const FilterComponent = currentColumn?.columnDef.meta?.FilterComponent;
   const filterLabel =
-    currentColumn?.columnDef.meta?.filterLabel || currentColumn?.id || "";
+    currentColumn?.columnDef.meta?.label || currentColumn?.id || "";
 
   return (
     <div className="flex items-center gap-2">
@@ -90,7 +90,7 @@ export function TableFilter({
         </SelectTrigger>
         <SelectContent>
           {filterableColumns.map((col) => {
-            const label = col.columnDef.meta?.filterLabel || col.id;
+            const label = col.columnDef.meta?.label || col.id;
             return (
               <SelectItem key={col.id} value={col.id}>
                 {label}
