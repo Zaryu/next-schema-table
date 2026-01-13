@@ -431,7 +431,7 @@ function getUserColumns(): ColumnDef<User>[] {
       accessorKey: "is_admin",
       header: ({ column, table }) => (
         <SortableHeader column={column} table={table}>
-          Status
+          Role
         </SortableHeader>
       ),
       cell: ({ row }) =>
