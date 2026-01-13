@@ -99,6 +99,7 @@ function getColumns(): ColumnDef<Product>[] {
       accessorKey: "name",
       header: "Product Name",
       meta: {
+        label: "Product Name"
         FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
           <Input
             placeholder={label}
@@ -106,13 +107,13 @@ function getColumns(): ColumnDef<Product>[] {
             onChange={(e) => onChange(e.target.value)}
           />
         ),
-        filterLabel: "Search products",
       },
     },
     {
       accessorKey: "category",
       header: "Category",
       meta: {
+        label: "Category"
         FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
           <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
             <SelectTrigger>
@@ -126,7 +127,6 @@ function getColumns(): ColumnDef<Product>[] {
             </SelectContent>
           </Select>
         ),
-        filterLabel: "Filter by category",
       },
     },
     {
@@ -195,6 +195,9 @@ function getColumns(): ColumnDef<Employee>[] {
         </SortableHeader>
       ),
       enableSorting: true,
+      meta: {
+        label: "Name",
+      },
     },
     {
       accessorKey: "department",
@@ -204,6 +207,9 @@ function getColumns(): ColumnDef<Employee>[] {
         </SortableHeader>
       ),
       enableSorting: true,
+      meta: {
+        label: "Department",
+      },
     },
     {
       accessorKey: "salary",
@@ -214,6 +220,9 @@ function getColumns(): ColumnDef<Employee>[] {
       ),
       cell: ({ row }) => `$${row.original.salary.toLocaleString()}`,
       enableSorting: true,
+      meta: {
+        label: "Salary",
+      },
     },
     {
       accessorKey: "hireDate",
@@ -225,15 +234,36 @@ function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => new Date(row.original.hireDate).toLocaleDateString(),
       enableSorting: true,
       sortingFn: "datetime",
+      meta: {
+        label: "Hire Date",
+      },
     },
   ];
 }
 
 export default function EmployeesPage() {
   const employees = [
-    { id: 1, name: "Alice Johnson", department: "Engineering", salary: 95000, hireDate: "2020-03-15" },
-    { id: 2, name: "Bob Smith", department: "Marketing", salary: 75000, hireDate: "2021-07-22" },
-    { id: 3, name: "Carol Williams", department: "Engineering", salary: 110000, hireDate: "2019-01-10" },
+    {
+      id: 1,
+      name: "Alice Johnson",
+      department: "Engineering",
+      salary: 95000,
+      hireDate: "2020-03-15",
+    },
+    {
+      id: 2,
+      name: "Bob Smith",
+      department: "Marketing",
+      salary: 75000,
+      hireDate: "2021-07-22",
+    },
+    {
+      id: 3,
+      name: "Carol Williams",
+      department: "Engineering",
+      salary: 110000,
+      hireDate: "2019-01-10",
+    },
   ];
 
   const columns = useMemo(() => getColumns(), []);
@@ -321,6 +351,7 @@ function getBulkActions(): BulkAction<Order>[] {
       variant: "default",
       icon: Mail,
       confirmMessage: "Send receipt to {count} customers?",
+      confirmBtnLabel: "Send Receipt",
       action: async (rows) => {
         const orderIds = rows.map((r) => r.original.id);
         await sendReceipts(orderIds);
@@ -332,6 +363,7 @@ function getBulkActions(): BulkAction<Order>[] {
       variant: "default",
       icon: Archive,
       confirmMessage: "Archive {count} orders?",
+      confirmBtnLabel: "Archive",
       action: async (rows) => {
         const orderIds = rows.map((r) => r.original.id);
         await archiveOrders(orderIds);
@@ -343,6 +375,7 @@ function getBulkActions(): BulkAction<Order>[] {
       variant: "destructive",
       icon: Trash2,
       confirmMessage: "Permanently delete {count} orders?",
+      confirmBtnLabel: "Delete",
       action: async (rows) => {
         const orderIds = rows.map((r) => r.original.id);
         await deleteOrders(orderIds);
@@ -354,22 +387,40 @@ function getBulkActions(): BulkAction<Order>[] {
 
 // Mock API functions
 async function sendReceipts(ids: number[]) {
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 }
 
 async function archiveOrders(ids: number[]) {
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 }
 
 async function deleteOrders(ids: number[]) {
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 }
 
 export default function OrdersPage() {
   const orders = [
-    { id: 1, orderNumber: "ORD-001", customer: "John Doe", status: "Completed", total: 299.99 },
-    { id: 2, orderNumber: "ORD-002", customer: "Jane Smith", status: "Pending", total: 149.50 },
-    { id: 3, orderNumber: "ORD-003", customer: "Bob Johnson", status: "Shipped", total: 499.99 },
+    {
+      id: 1,
+      orderNumber: "ORD-001",
+      customer: "John Doe",
+      status: "Completed",
+      total: 299.99,
+    },
+    {
+      id: 2,
+      orderNumber: "ORD-002",
+      customer: "Jane Smith",
+      status: "Pending",
+      total: 149.5,
+    },
+    {
+      id: 3,
+      orderNumber: "ORD-003",
+      customer: "Bob Johnson",
+      status: "Shipped",
+      total: 499.99,
+    },
   ];
 
   const columns = useMemo(() => getColumns(), []);
@@ -396,10 +447,12 @@ export default function OrdersPage() {
 Full-featured admin table with all features combined.
 
 See the complete example in [src/example/](../src/example/):
+
 - [columns.tsx](../src/example/columns.tsx) - Advanced column definitions
 - [page.tsx](../src/example/page.tsx) - Complete implementation
 
 This example includes:
+
 - Custom Zod schema with validation
 - Sortable columns with custom sort functions
 - Custom filter components (text, select, date, boolean)
@@ -448,7 +501,8 @@ function getColumns(): ColumnDef<Post>[] {
     {
       accessorKey: "publishedAt",
       header: "Published",
-      cell: ({ row }) => new Date(row.original.publishedAt).toLocaleDateString(),
+      cell: ({ row }) =>
+        new Date(row.original.publishedAt).toLocaleDateString(),
     },
     {
       accessorKey: "status",

@@ -8,6 +8,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Columns3 } from "lucide-react";
 import { Table } from "@tanstack/react-table";
+import { formatColumnLabel } from "@/lib/utils";
+import { format } from "node:path";
 
 interface Props {
   table: Table<any>;
@@ -16,15 +18,6 @@ interface Props {
     title: string;
   };
 }
-
-const columnLabels: Record<string, string> = {
-  name: "Name",
-  email: "E-Mail",
-  provider: "Provider",
-  is_admin: "Status",
-  created_at: "Erstellt am",
-  actions: "Aktionen",
-};
 
 export function ColumnVisibilityDropdown({ table, label }: Props) {
   const hidableColumns = table
@@ -60,7 +53,7 @@ export function ColumnVisibilityDropdown({ table, label }: Props) {
                 setUpdateCounter((prev) => prev + 1);
               }}
             >
-              {column.columnDef.meta?.label || column.id}
+              {column.columnDef.meta?.label || formatColumnLabel(column.id)}
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>

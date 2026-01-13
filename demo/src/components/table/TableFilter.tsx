@@ -13,6 +13,7 @@ import { z } from "zod";
 import { parseFilterValue } from "@/lib/table/types";
 import { useDebouncedCallback } from "@tanstack/react-pacer";
 import { X } from "lucide-react";
+import { formatColumnLabel } from "@/lib/utils";
 
 interface TableFilterProps {
   table: Table<any>;
@@ -80,7 +81,8 @@ export function TableFilter({
 
   const FilterComponent = currentColumn?.columnDef.meta?.FilterComponent;
   const filterLabel =
-    currentColumn?.columnDef.meta?.label || currentColumn?.id || "";
+    currentColumn?.columnDef.meta?.label ||
+    formatColumnLabel(currentColumn?.id || "");
 
   return (
     <div className="flex items-center gap-2">
@@ -90,7 +92,8 @@ export function TableFilter({
         </SelectTrigger>
         <SelectContent>
           {filterableColumns.map((col) => {
-            const label = col.columnDef.meta?.label || col.id;
+            const label =
+              col.columnDef.meta?.label || formatColumnLabel(col.id);
             return (
               <SelectItem key={col.id} value={col.id}>
                 {label}

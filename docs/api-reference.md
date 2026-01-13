@@ -172,13 +172,13 @@ interface FilterComponentProps<T = unknown> {
 
 ### Properties
 
-| Property      | Type                                                       | Description                                    |
-| ------------- | ---------------------------------------------------------- | ---------------------------------------------- |
-| `value`       | `string`                                                   | Current filter value from URL (always string)  |
-| `onChange`    | `(value: string) => void`                                  | Function to update the filter value            |
-| `label`       | `string`                                                   | Display label from column's `meta.filterLabel` |
-| `parsedValue` | `T \| null`                                                | Type-safe parsed value based on Zod schema     |
-| `schemaType`  | `"string" \| "boolean" \| "number" \| "date" \| "unknown"` | Detected schema type for the column            |
+| Property      | Type                                                       | Description                                   |
+| ------------- | ---------------------------------------------------------- | --------------------------------------------- |
+| `value`       | `string`                                                   | Current filter value from URL (always string) |
+| `onChange`    | `(value: string) => void`                                  | Function to update the filter value           |
+| `label`       | `string`                                                   | Display label from column's `meta.label`      |
+| `parsedValue` | `T \| null`                                                | Type-safe parsed value based on Zod schema    |
+| `schemaType`  | `"string" \| "boolean" \| "number" \| "date" \| "unknown"` | Detected schema type for the column           |
 
 ### Example
 
@@ -188,6 +188,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // Text filter
 meta: {
+  label: "Search by name",
   FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
     <Input
       placeholder={label}
@@ -195,11 +196,11 @@ meta: {
       onChange={(e) => onChange(e.target.value)}
     />
   ),
-  filterLabel: "Search by name",
 }
 
 // Select filter
 meta: {
+  label: "Filter by role",
   FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
     <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
       <SelectTrigger>
@@ -212,11 +213,11 @@ meta: {
       </SelectContent>
     </Select>
   ),
-  filterLabel: "Filter by role",
 }
 
 // Date filter with parsed value
 meta: {
+  label: "Filter by date",
   FilterComponent: ({ parsedValue, onChange, label }: FilterComponentProps<Date>) => (
     <DatePicker
       date={parsedValue || undefined}
@@ -224,7 +225,6 @@ meta: {
       placeholder={label}
     />
   ),
-  filterLabel: "Filter by date",
 }
 ```
 
@@ -238,19 +238,19 @@ Extended properties for TanStack Table columns.
 
 ```tsx
 interface ColumnMeta {
+  label?: string;
   FilterComponent?: React.ComponentType<FilterComponentProps<any>>;
-  filterLabel?: string;
   enableColumnOrdering?: boolean;
 }
 ```
 
 ### Properties
 
-| Property               | Type                                             | Description                                                    |
-| ---------------------- | ------------------------------------------------ | -------------------------------------------------------------- |
-| `FilterComponent`      | `React.ComponentType<FilterComponentProps<any>>` | Custom filter UI component                                     |
-| `filterLabel`          | `string`                                         | Label shown in filter dropdown and placeholder                 |
-| `enableColumnOrdering` | `boolean`                                        | Enable drag & drop reordering for this column (default: false) |
+| Property               | Type                                             | Description                                                               |
+| ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
+| `label`                | `string`                                         | Label shown in filter dropdown, placeholder and columnVisibility dropdown |
+| `FilterComponent`      | `React.ComponentType<FilterComponentProps<any>>` | Custom filter UI component                                                |
+| `enableColumnOrdering` | `boolean`                                        | Enable drag & drop reordering for this column (default: false)            |
 
 ### Example
 
@@ -265,8 +265,8 @@ interface ColumnMeta {
   enableSorting: true,
   enableColumnFilter: true,
   meta: {
+    label: "Search",
     FilterComponent: EmailFilter,
-    filterLabel: "Search by email",
     enableColumnOrdering: true,  // Allow drag & drop
   },
 }
@@ -308,6 +308,9 @@ interface SortableHeaderProps {
   ),
   enableSorting: true,
   meta: {
+    //Label for column visibility dropdown and filter dropdown items
+    //If not passed, table will fall to accessorKey and will format it. E.g.: isAdmin -> Is Admin, created_at -> Created At
+    label: "Name"
     enableColumnOrdering: true,  // Adds drag handle
   },
 }
@@ -521,8 +524,8 @@ This library extends TanStack Table with custom meta types:
 ```tsx
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
+    label?: string;
     FilterComponent?: React.ComponentType<FilterComponentProps<any>>;
-    filterLabel?: string;
     enableColumnOrdering?: boolean;
   }
 

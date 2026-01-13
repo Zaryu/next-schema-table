@@ -38,6 +38,7 @@ import type { FilterComponentProps } from "@/lib/table/types";
   accessorKey: "name",
   header: "Name",
   meta: {
+    label: "Name",
     FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
       <Input
         placeholder={label}
@@ -46,7 +47,6 @@ import type { FilterComponentProps } from "@/lib/table/types";
         className="max-w-xs"
       />
     ),
-    filterLabel: "Search by name",
   },
 }
 ```
@@ -62,6 +62,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
   accessorKey: "role",
   header: "Role",
   meta: {
+    label: "Role",
     FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
       <Select
         value={value || "all"}
@@ -78,7 +79,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
         </SelectContent>
       </Select>
     ),
-    filterLabel: "Filter by role",
   },
 }
 ```
@@ -97,6 +97,7 @@ For true/false values:
     return cellValue === (filterValue === "true");
   },
   meta: {
+    label: "Status",
     FilterComponent: ({ value, onChange, label }: FilterComponentProps<boolean>) => (
       <Select
         value={value || "all"}
@@ -112,7 +113,6 @@ For true/false values:
         </SelectContent>
       </Select>
     ),
-    filterLabel: "Filter by status",
   },
 }
 ```
@@ -138,6 +138,7 @@ import { DatePicker } from "@/components/ui/date-picker";
     );
   },
   meta: {
+    label: "Created At",
     FilterComponent: ({ parsedValue, onChange, label }: FilterComponentProps<Date>) => (
       <DatePicker
         date={parsedValue || undefined}
@@ -146,7 +147,6 @@ import { DatePicker } from "@/components/ui/date-picker";
         className="max-w-xs"
       />
     ),
-    filterLabel: "Filter by date",
   },
 }
 ```
@@ -160,6 +160,7 @@ Fetch options from your data:
   accessorKey: "provider",
   header: "Provider",
   meta: {
+    label: "Provider",
     FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => {
       const { data: providers = [] } = useProvidersQuery();
 
@@ -182,7 +183,6 @@ Fetch options from your data:
         </Select>
       );
     },
-    filterLabel: "Filter by provider",
   },
 }
 ```
@@ -255,7 +255,6 @@ meta: {
       onChange={(e) => onChange(e.target.value)}
     />
   ),
-  filterLabel: "Search by name",
 }
 ```
 
@@ -277,7 +276,6 @@ meta: {
       </SelectContent>
     </Select>
   ),
-  filterLabel: "Filter by role",
 }
 ```
 
@@ -294,7 +292,6 @@ meta: {
       placeholder={label}
     />
   ),
-  filterLabel: "Filter by date",
 }
 ```
 
@@ -315,6 +312,7 @@ For complex filtering logic, provide a custom `filterFn`:
     return price >= min && price <= max;
   },
   meta: {
+    label: "Price",
     FilterComponent: ({ value, onChange }: FilterComponentProps) => (
       <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
         <SelectTrigger className="max-w-xs">
@@ -329,7 +327,6 @@ For complex filtering logic, provide a custom `filterFn`:
         </SelectContent>
       </Select>
     ),
-    filterLabel: "Price range",
   },
 }
 ```
@@ -355,7 +352,7 @@ For complex filtering logic, provide a custom `filterFn`:
   schema={schema}
   data={data}
   columns={columns}
-  enableFilter={false}  // Disables all filtering UI
+  enableFilter={false} // Disables all filtering UI
 />
 ```
 
@@ -367,8 +364,8 @@ Filters are automatically validated against your Zod schema:
 
 ```tsx
 const userSchema = z.object({
-  age: z.number(),  // Only valid numbers accepted
-  email: z.string().email(),  // Must be valid email format
+  age: z.number(), // Only valid numbers accepted
+  email: z.string().email(), // Must be valid email format
   // ...
 });
 ```
@@ -386,6 +383,7 @@ Filters sync to URL query parameters:
 ```
 
 This enables:
+
 - Bookmarking filtered views
 - Sharing specific filters
 - Browser back/forward navigation
@@ -401,6 +399,7 @@ Use descriptive `filterLabel` values that help users understand what they're fil
 ### Match Input Type to Data
 
 Use appropriate input components for each data type:
+
 - Text fields → `Input`
 - Enums → `Select`
 - Booleans → `Select` or `Switch`
@@ -421,7 +420,8 @@ Use React hooks to fetch filter options efficiently and prevent unnecessary re-r
 
 ### Complete Example
 
-See the [example columns](../src/example/columns.tsx) for complete implementations of:
+See the [example columns](../demo/page.tsx) for complete implementations of:
+
 - Text search filters
 - Select filters with dynamic options
 - Boolean filters with badges

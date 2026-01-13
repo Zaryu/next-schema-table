@@ -333,7 +333,6 @@ function getUserColumns(): ColumnDef<User>[] {
       enableSorting: true,
       enableHiding: true,
       meta: {
-        label: "Name",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -365,7 +364,6 @@ function getUserColumns(): ColumnDef<User>[] {
       enableSorting: true,
       enableHiding: true,
       meta: {
-        label: "Email",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -398,7 +396,6 @@ function getUserColumns(): ColumnDef<User>[] {
       enableSorting: true,
       enableHiding: true,
       meta: {
-        label: "Provider",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -454,7 +451,7 @@ function getUserColumns(): ColumnDef<User>[] {
         return cellValue === (filterValue === "true");
       },
       meta: {
-        label: "Status",
+        label: "Role",
         enableColumnOrdering: true,
         FilterComponent: ({
           value,
@@ -510,7 +507,6 @@ function getUserColumns(): ColumnDef<User>[] {
         );
       },
       meta: {
-        label: "Created At",
         enableColumnOrdering: true,
         FilterComponent: ({
           onChange,

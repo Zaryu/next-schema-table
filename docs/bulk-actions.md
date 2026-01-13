@@ -36,6 +36,7 @@ const bulkActions: BulkAction<User>[] = [
     variant: "destructive",
     icon: Trash2,
     confirmMessage: "Are you sure you want to delete {count} users?",
+    confirmBtnLabel: "Delete",
     action: async (rows) => {
       const userIds = rows.map((r) => r.original.id);
       await deleteUsers(userIds);
@@ -85,17 +86,17 @@ interface BulkActionDropdownItemProps<TData> {
 
 ### Properties
 
-| Property             | Type                                                      | Required | Description                                                         |
-| -------------------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------------- |
-| `label`              | `string`                                                  | Yes      | Button text displayed to user                                       |
-| `action`             | `(rows: Row<TData>[]) => void \| Promise<void>`           | Yes      | Function called when action is triggered                            |
-| `variant`            | `"default" \| "destructive"`                              | No       | Button style variant. Use `destructive` for dangerous actions       |
-| `confirmMessage`     | `string`                                                  | No       | Simple confirmation dialog message. Use `{count}` placeholder       |
-| `confirmBtnLabel`    | `string`                                                  | No       | Label for confirm button in default dialog                          |
-| `confirmComponent`   | `React.ComponentType<BulkActionConfirmProps<TData>>`      | No       | Custom confirm dialog component. Overrides default dialog           |
-| `customDropdownItem` | `React.ComponentType<BulkActionDropdownItemProps<TData>>` | No       | Custom dropdown item component. Replaces default dropdown menu item |
-| `icon`               | `React.ReactElement`                                      | No       | Icon element from lucide-react or similar                           |
-| `skipConfirm`        | `boolean`                                                 | No       | If true, skips confirmation dialog and executes action immediately  |
+| Property             | Type                                                      | Required | Description                                                                                  |
+| -------------------- | --------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------- |
+| `label`              | `string`                                                  | Yes      | Button text displayed to user                                                                |
+| `action`             | `(rows: Row<TData>[]) => void \| Promise<void>`           | Yes      | Function called when action is triggered                                                     |
+| `variant`            | `"default" \| "destructive"`                              | No       | Button style variant. Use `destructive` for dangerous actions                                |
+| `confirmMessage`     | `string`                                                  | No       | Simple confirmation dialog message. Use `{count}` placeholder                                |
+| `confirmBtnLabel`    | `string`                                                  | No       | Label for confirm button in default, if not passed, it defaults to default label prop dialog |
+| `confirmComponent`   | `React.ComponentType<BulkActionConfirmProps<TData>>`      | No       | Custom confirm dialog component. Overrides default dialog                                    |
+| `customDropdownItem` | `React.ComponentType<BulkActionDropdownItemProps<TData>>` | No       | Custom dropdown item component. Replaces default dropdown menu item                          |
+| `icon`               | `React.ReactElement`                                      | No       | Icon element from lucide-react or similar                                                    |
+| `skipConfirm`        | `boolean`                                                 | No       | If true, skips confirmation dialog and executes action immediately                           |
 
 ---
 
@@ -107,7 +108,7 @@ interface BulkActionDropdownItemProps<TData> {
 {
   label: "Delete Selected",
   variant: "destructive",
-  icon: Trash2,
+  icon: <Trash2 />,
   confirmMessage: "Delete {count} users? This cannot be undone.",
   action: async (rows) => {
     const ids = rows.map((r) => r.original.id);
@@ -125,7 +126,7 @@ interface BulkActionDropdownItemProps<TData> {
 {
   label: "Send Email",
   variant: "default",
-  icon: Mail,
+  icon: <Mail />,
   confirmMessage: "Send email to {count} users?",
   action: async (rows) => {
     const emails = rows.map((r) => r.original.email);
@@ -143,7 +144,7 @@ interface BulkActionDropdownItemProps<TData> {
 {
   label: "Mark as Active",
   variant: "default",
-  icon: CheckCircle,
+  icon: <CheckCircle />,
   action: async (rows) => {
     const ids = rows.map((r) => r.original.id);
     await fetch("/api/users/bulk-update", {
@@ -163,7 +164,7 @@ interface BulkActionDropdownItemProps<TData> {
 {
   label: "Export to CSV",
   variant: "default",
-  icon: Download,
+  icon: <Download />,
   action: (rows) => {
     const data = rows.map((r) => r.original);
     const csv = convertToCSV(data);
@@ -450,8 +451,9 @@ You can define multiple bulk actions:
 const bulkActions: BulkAction<User>[] = [
   {
     label: "Make Admin",
-    icon: Shield,
+    icon: <Shield />,
     confirmMessage: "Promote {count} users to admin?",
+    confirmBtnLabel: "Make Admin",
     action: async (rows) => {
       const ids = rows.map((r) => r.original.id);
       await promoteToAdmin(ids);
@@ -459,8 +461,9 @@ const bulkActions: BulkAction<User>[] = [
   },
   {
     label: "Remove Admin",
-    icon: ShieldOff,
+    icon: <ShieldOff />,
     confirmMessage: "Demote {count} users from admin?",
+    confirmBtnLabel: "Remove Admin",
     action: async (rows) => {
       const ids = rows.map((r) => r.original.id);
       await demoteFromAdmin(ids);
