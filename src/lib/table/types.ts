@@ -159,8 +159,8 @@ export function getNextSortingState<TData>(column: Column<TData>) {
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData, TValue> {
+    label?: string;
     FilterComponent?: React.ComponentType<FilterComponentProps<any>>;
-    filterLabel?: string;
     enableColumnOrdering?: boolean;
     excludeFromColumnOrder?: boolean;
   }

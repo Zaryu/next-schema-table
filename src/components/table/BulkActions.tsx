@@ -161,7 +161,7 @@ export function BulkActions<TData>({
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction onClick={() => handleAction(action)}>
-                  {action.confirmBtnLabel || "Confirm"}
+                  {action.confirmBtnLabel || action.label || "Confirm"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
