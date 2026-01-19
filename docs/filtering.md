@@ -32,23 +32,30 @@ You can create custom filter UI for each column using the `meta` property. This 
 
 ```tsx
 import { Input } from "@/components/ui/input";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 import type { FilterComponentProps } from "@/lib/table/types";
 
-{
-  accessorKey: "name",
-  header: "Name",
-  meta: {
-    label: "Name",
-    FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
-      <Input
-        placeholder={label}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="max-w-xs"
-      />
-    ),
-  },
-}
+const columns =
+  ColumnConfig <
+  schema >
+  []([
+    {
+      key: "name",
+      label: "Name",
+      filterComponent: ({
+        value,
+        onChange,
+        label,
+      }: FilterComponentProps<string>) => (
+        <Input
+          placeholder={label}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="max-w-xs"
+        />
+      ),
+    },
+  ]);
 ```
 
 ### Select Filter
@@ -58,29 +65,27 @@ Perfect for enums or fixed value sets:
 ```tsx
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
+// ...existing code...
 {
-  accessorKey: "role",
-  header: "Role",
-  meta: {
-    label: "Role",
-    FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
-      <Select
-        value={value || "all"}
-        onValueChange={(val) => onChange(val === "all" ? "" : val)}
-      >
-        <SelectTrigger className="max-w-xs">
-          <SelectValue placeholder={label} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Roles</SelectItem>
-          <SelectItem value="admin">Admin</SelectItem>
-          <SelectItem value="user">User</SelectItem>
-          <SelectItem value="guest">Guest</SelectItem>
-        </SelectContent>
-      </Select>
-    ),
-  },
-}
+  key: "role",
+  label: "Role",
+  filterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
+    <Select
+      value={value || "all"}
+      onValueChange={(val) => onChange(val === "all" ? "" : val)}
+    >
+      <SelectTrigger className="max-w-xs">
+        <SelectValue placeholder={label} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Roles</SelectItem>
+        <SelectItem value="admin">Admin</SelectItem>
+        <SelectItem value="user">User</SelectItem>
+        <SelectItem value="guest">Guest</SelectItem>
+      </SelectContent>
+    </Select>
+  ),
+},
 ```
 
 ### Boolean Filter
@@ -88,33 +93,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 For true/false values:
 
 ```tsx
+// ...existing code...
 {
-  accessorKey: "isActive",
-  header: "Status",
+  key: "isActive",
+  label: "Status",
   filterFn: (row, columnId, filterValue) => {
     if (!filterValue) return true;
     const cellValue = row.getValue(columnId) as boolean;
     return cellValue === (filterValue === "true");
   },
-  meta: {
-    label: "Status",
-    FilterComponent: ({ value, onChange, label }: FilterComponentProps<boolean>) => (
-      <Select
-        value={value || "all"}
-        onValueChange={(val) => onChange(val === "all" ? "" : val)}
-      >
-        <SelectTrigger className="max-w-xs">
-          <SelectValue placeholder={label} />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All</SelectItem>
-          <SelectItem value="true">Active</SelectItem>
-          <SelectItem value="false">Inactive</SelectItem>
-        </SelectContent>
-      </Select>
-    ),
-  },
-}
+  filterComponent: ({ value, onChange, label }: FilterComponentProps<boolean>) => (
+    <Select
+      value={value || "all"}
+      onValueChange={(val) => onChange(val === "all" ? "" : val)}
+    >
+      <SelectTrigger className="max-w-xs">
+        <SelectValue placeholder={label} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All</SelectItem>
+        <SelectItem value="true">Active</SelectItem>
+        <SelectItem value="false">Inactive</SelectItem>
+      </SelectContent>
+    </Select>
+  ),
+},
 ```
 
 ### Date Filter
@@ -124,9 +127,10 @@ For date fields:
 ```tsx
 import { DatePicker } from "@/components/ui/date-picker";
 
+// ...existing code...
 {
-  accessorKey: "createdAt",
-  header: "Created At",
+  key: "createdAt",
+  label: "Created At",
   filterFn: (row, columnId, filterValue) => {
     if (!filterValue) return true;
     const cellValue = new Date(row.getValue(columnId) as string);
@@ -137,18 +141,15 @@ import { DatePicker } from "@/components/ui/date-picker";
       cellValue.getDate() === filterDate.getDate()
     );
   },
-  meta: {
-    label: "Created At",
-    FilterComponent: ({ parsedValue, onChange, label }: FilterComponentProps<Date>) => (
-      <DatePicker
-        date={parsedValue || undefined}
-        onDateChange={(date) => onChange(date ? date.toISOString() : "")}
-        placeholder={label}
-        className="max-w-xs"
-      />
-    ),
-  },
-}
+  filterComponent: ({ parsedValue, onChange, label }: FilterComponentProps<Date>) => (
+    <DatePicker
+      date={parsedValue || undefined}
+      onDateChange={(date) => onChange(date ? date.toISOString() : "")}
+      placeholder={label}
+      className="max-w-xs"
+    />
+  ),
+},
 ```
 
 ### Dynamic Filter with Data
@@ -156,35 +157,32 @@ import { DatePicker } from "@/components/ui/date-picker";
 Fetch options from your data:
 
 ```tsx
+// ...existing code...
 {
-  accessorKey: "provider",
-  header: "Provider",
-  meta: {
-    label: "Provider",
-    FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => {
-      const { data: providers = [] } = useProvidersQuery();
-
-      return (
-        <Select
-          value={value || "all"}
-          onValueChange={(val) => onChange(val === "all" ? "" : val)}
-        >
-          <SelectTrigger className="max-w-xs">
-            <SelectValue placeholder={label} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Providers</SelectItem>
-            {providers.map((provider) => (
-              <SelectItem key={provider.id} value={provider.name}>
-                {provider.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      );
-    },
+  key: "provider",
+  label: "Provider",
+  filterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => {
+    const { data: providers = [] } = useProvidersQuery();
+    return (
+      <Select
+        value={value || "all"}
+        onValueChange={(val) => onChange(val === "all" ? "" : val)}
+      >
+        <SelectTrigger className="max-w-xs">
+          <SelectValue placeholder={label} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Providers</SelectItem>
+          {providers.map((provider) => (
+            <SelectItem key={provider.id} value={provider.name}>
+              {provider.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
   },
-}
+},
 ```
 
 ---

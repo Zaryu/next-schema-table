@@ -111,29 +111,28 @@ Create `app/users/columns.tsx`:
 ```tsx
 "use client";
 
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 import { User } from "./schema";
 
-export function getColumns(): ColumnDef<User>[] {
-  return [
+const columns = ColumnConfig<schema>[]([
     {
-      accessorKey: "name",
-      header: "Name",
+      key: "name",
+      label: "Name",
     },
     {
-      accessorKey: "email",
-      header: "Email",
+      key: "email",
+      label: "Email",
     },
     {
-      accessorKey: "role",
-      header: "Role",
+      key: "role",
+      label: "Role",
     },
     {
-      accessorKey: "createdAt",
-      header: "Created At",
+      key: "createdAt",
+      label: "Created At",
       cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
     },
-  ];
+  ]);
 }
 ```
 
@@ -174,11 +173,7 @@ export default function UsersPage() {
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Users</h1>
 
-      <DataTable
-        schema={userSchema}
-        data={users}
-        columns={columns}
-      />
+      <DataTable schema={userSchema} data={users} columns={columns} />
     </div>
   );
 }
@@ -191,6 +186,7 @@ npm run dev
 ```
 
 Visit `http://localhost:3000/users` and you should see your table with:
+
 - Pagination
 - Column visibility controls
 - Built-in filtering

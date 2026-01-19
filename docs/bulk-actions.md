@@ -394,35 +394,40 @@ Skip confirmation for:
 
 ### Select Column
 
-In order to get the selected Count, you`ll need to create a select column in cour columnsDef like this example:
+A select column will be automatically added, if there are any bulkActions defined. However, you can create a custom select column in your ColumnConfig like this example:
 
 ```tsx
-{
-  id: "select",
-  header: ({ table }) => (
-    <Checkbox
-      checked={
-        table.getIsAllPageRowsSelected() ||
-        (table.getIsSomePageRowsSelected() && "indeterminate")
-      }
-      onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-      aria-label="Select all"
-    />
-  ),
-  cell: ({ row }) => (
-    <Checkbox
-      checked={row.getIsSelected()}
-      onCheckedChange={(value) => row.toggleSelected(!!value)}
-      aria-label="Select row"
-    />
-  ),
-  enableSorting: false,
-  enableHiding: false,
-  enableColumnFilter: false,
-  meta: {
-    excludeFromColumnOrder: true,
-  },
-}
+import { ColumnConfig } from "@/lib/table/columnConfig";
+
+const columns =
+  ColumnConfig <
+  schema >
+  []([
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+      enableColumnFilter: false,
+      excludeFromColumnOrder: true,
+    },
+  ]);
 ```
 
 This will generate select fields in each row also with a select all functionality at the top.

@@ -187,45 +187,36 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 // Text filter
-meta: {
-  label: "Search by name",
-  FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
-    <Input
-      placeholder={label}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    />
-  ),
-}
+filterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
+  <Input
+    placeholder={label}
+    value={value}
+    onChange={(e) => onChange(e.target.value)}
+  />
+),
 
 // Select filter
-meta: {
-  label: "Filter by role",
-  FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
-    <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
-      <SelectTrigger>
-        <SelectValue placeholder={label} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="all">All</SelectItem>
-        <SelectItem value="admin">Admin</SelectItem>
-        <SelectItem value="user">User</SelectItem>
-      </SelectContent>
-    </Select>
-  ),
-}
+filterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
+  <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
+    <SelectTrigger>
+      <SelectValue placeholder={label} />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="all">All</SelectItem>
+      <SelectItem value="admin">Admin</SelectItem>
+      <SelectItem value="user">User</SelectItem>
+    </SelectContent>
+  </Select>
+),
 
 // Date filter with parsed value
-meta: {
-  label: "Filter by date",
-  FilterComponent: ({ parsedValue, onChange, label }: FilterComponentProps<Date>) => (
-    <DatePicker
-      date={parsedValue || undefined}
-      onDateChange={(date) => onChange(date ? date.toISOString() : "")}
-      placeholder={label}
-    />
-  ),
-}
+filterComponent: ({ parsedValue, onChange, label }: FilterComponentProps<Date>) => (
+  <DatePicker
+    date={parsedValue || undefined}
+    onDateChange={(date) => onChange(date ? date.toISOString() : "")}
+    placeholder={label}
+  />
+),
 ```
 
 ---
@@ -246,30 +237,34 @@ interface ColumnMeta {
 
 ### Properties
 
-| Property               | Type                                             | Description                                                               |
-| ---------------------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
-| `label`                | `string`                                         | Label shown in filter dropdown, placeholder and columnVisibility dropdown |
-| `FilterComponent`      | `React.ComponentType<FilterComponentProps<any>>` | Custom filter UI component                                                |
-| `enableColumnOrdering` | `boolean`                                        | Enable drag & drop reordering for this column (default: false)            |
+| Property               | Type                                             | Description                                                    |
+| ---------------------- | ------------------------------------------------ | -------------------------------------------------------------- |
+| `filterComponent`      | `React.ComponentType<FilterComponentProps<any>>` | Custom filter UI component                                     |
+| `enableColumnOrdering` | `boolean`                                        | Enable drag & drop reordering for this column (default: false) |
 
 ### Example
 
 ```tsx
-{
-  accessorKey: "email",
-  header: ({ column, table }) => (
-    <SortableHeader column={column} table={table}>
-      Email
-    </SortableHeader>
-  ),
-  enableSorting: true,
-  enableColumnFilter: true,
-  meta: {
-    label: "Search",
-    FilterComponent: EmailFilter,
-    enableColumnOrdering: true,  // Allow drag & drop
-  },
-}
+import { ColumnConfig } from "@/lib/table/columnConfig";
+
+const columns =
+  ColumnConfig <
+  schema >
+  []([
+    {
+      key: "email",
+      label: "Search",
+      header: ({ column, table }) => (
+        <SortableHeader column={column} table={table}>
+          Email
+        </SortableHeader>
+      ),
+      enableSorting: true,
+      enableColumnFilter: true,
+      filterComponent: EmailFilter,
+      enableColumnOrdering: true, // Allow drag & drop
+    },
+  ]);
 ```
 
 ---
@@ -299,21 +294,24 @@ interface SortableHeaderProps {
 ### Example
 
 ```tsx
-{
-  accessorKey: "name",
-  header: ({ column, table }) => (
-    <SortableHeader column={column} table={table}>
-      Name
-    </SortableHeader>
-  ),
-  enableSorting: true,
-  meta: {
-    //Label for column visibility dropdown and filter dropdown items
-    //If not passed, table will fall to accessorKey and will format it. E.g.: isAdmin -> Is Admin, created_at -> Created At
-    label: "Name"
-    enableColumnOrdering: true,  // Adds drag handle
-  },
-}
+import { ColumnConfig } from "@/lib/table/columnConfig";
+
+const columns =
+  ColumnConfig <
+  schema >
+  []([
+    {
+      key: "name",
+      label: "Name",
+      header: ({ column, table }) => (
+        <SortableHeader column={column} table={table}>
+          Name
+        </SortableHeader>
+      ),
+      enableSorting: true,
+      enableColumnOrdering: true, // Adds drag handle
+    },
+  ]);
 ```
 
 ---
@@ -493,6 +491,8 @@ The library is fully typed with TypeScript 5+. All props, return types, and gene
 ### Generic Type Parameters
 
 ```tsx
+import { ColumnConfig } from "@/lib/table/columnConfig";
+
 // Schema type is inferred from Zod schema
 const schema = z.object({
   id: z.number(),
@@ -502,12 +502,15 @@ const schema = z.object({
 type Data = z.infer<typeof schema>;
 
 // Column definitions use inferred type
-const columns: ColumnDef<Data>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-];
+const columns =
+  ColumnConfig <
+  Data >
+  []([
+    {
+      key: "name",
+      label: "Name",
+    },
+  ]);
 
 // DataTable component enforces type safety
 <DataTable

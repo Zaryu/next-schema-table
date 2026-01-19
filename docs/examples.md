@@ -27,6 +27,7 @@ import { DataTable } from "@/components/table/DataTable";
 import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 
 const userSchema = z.object({
   id: z.number(),
@@ -37,20 +38,23 @@ const userSchema = z.object({
 
 type User = z.infer<typeof userSchema>;
 
-const columns: ColumnDef<User>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-  },
-];
+const columns =
+  ColumnConfig <
+  userSchema >
+  []([
+    {
+      key: "name",
+      label: "Name",
+    },
+    {
+      key: "email",
+      label: "Email",
+    },
+    {
+      key: "role",
+      label: "Role",
+    },
+  ]);
 
 export default function UsersPage() {
   const users = [
@@ -58,11 +62,7 @@ export default function UsersPage() {
     { id: 2, name: "Jane Smith", email: "jane@example.com", role: "User" },
   ];
 
-  const memoizedColumns = useMemo(() => columns, []);
-
-  return (
-    <DataTable schema={userSchema} data={users} columns={memoizedColumns} />
-  );
+  return <DataTable schema={userSchema} data={users} columns={columns} />;
 }
 ```
 
@@ -77,11 +77,18 @@ Add custom filter components for each column.
 
 import { DataTable } from "@/components/table/DataTable";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 import type { FilterComponentProps } from "@/lib/table/types";
 import { useMemo } from "react";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 
 const productSchema = z.object({
   id: z.number(),
@@ -93,63 +100,79 @@ const productSchema = z.object({
 
 type Product = z.infer<typeof productSchema>;
 
-function getColumns(): ColumnDef<Product>[] {
-  return [
+const columns =
+  ColumnConfig <
+  schema >
+  []([
     {
-      accessorKey: "name",
-      header: "Product Name",
-      meta: {
-        label: "Product Name"
-        FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
-          <Input
-            placeholder={label}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-          />
-        ),
-      },
+      key: "name",
+      label: "Product Name",
+      filterComponent: ({
+        value,
+        onChange,
+        label,
+      }: FilterComponentProps<string>) => (
+        <Input
+          placeholder={label}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      ),
     },
     {
-      accessorKey: "category",
-      header: "Category",
-      meta: {
-        label: "Category"
-        FilterComponent: ({ value, onChange, label }: FilterComponentProps<string>) => (
-          <Select value={value || "all"} onValueChange={(val) => onChange(val === "all" ? "" : val)}>
-            <SelectTrigger>
-              <SelectValue placeholder={label} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="electronics">Electronics</SelectItem>
-              <SelectItem value="clothing">Clothing</SelectItem>
-              <SelectItem value="books">Books</SelectItem>
-            </SelectContent>
-          </Select>
-        ),
-      },
+      key: "category",
+      label: "Category",
+      filterComponent: ({
+        value,
+        onChange,
+        label,
+      }: FilterComponentProps<string>) => (
+        <Select
+          value={value || "all"}
+          onValueChange={(val) => onChange(val === "all" ? "" : val)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder={label} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="electronics">Electronics</SelectItem>
+            <SelectItem value="clothing">Clothing</SelectItem>
+            <SelectItem value="books">Books</SelectItem>
+          </SelectContent>
+        </Select>
+      ),
     },
     {
-      accessorKey: "price",
-      header: "Price",
+      key: "price",
+      label: "Price",
       cell: ({ row }) => `$${row.original.price.toFixed(2)}`,
     },
     {
-      accessorKey: "inStock",
-      header: "In Stock",
-      cell: ({ row }) => row.original.inStock ? "Yes" : "No",
+      key: "inStock",
+      label: "In Stock",
+      cell: ({ row }) => (row.original.inStock ? "Yes" : "No"),
     },
-  ];
-}
+  ]);
 
 export default function ProductsPage() {
   const products = [
-    { id: 1, name: "Laptop", category: "electronics", price: 999.99, inStock: true },
-    { id: 2, name: "T-Shirt", category: "clothing", price: 19.99, inStock: false },
+    {
+      id: 1,
+      name: "Laptop",
+      category: "electronics",
+      price: 999.99,
+      inStock: true,
+    },
+    {
+      id: 2,
+      name: "T-Shirt",
+      category: "clothing",
+      price: 19.99,
+      inStock: false,
+    },
     { id: 3, name: "Book", category: "books", price: 14.99, inStock: true },
   ];
-
-  const columns = useMemo(() => getColumns(), []);
 
   return (
     <div className="container mx-auto p-6">
@@ -174,6 +197,7 @@ import { SortableHeader } from "@/components/table/SortableHeader";
 import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 
 const employeeSchema = z.object({
   id: z.number(),
@@ -185,34 +209,33 @@ const employeeSchema = z.object({
 
 type Employee = z.infer<typeof employeeSchema>;
 
-function getColumns(): ColumnDef<Employee>[] {
-  return [
+const columns =
+  ColumnConfig <
+  Employee >
+  []([
     {
-      accessorKey: "name",
+      key: "name",
+      label: "Name",
       header: ({ column, table }) => (
         <SortableHeader column={column} table={table}>
           Name
         </SortableHeader>
       ),
       enableSorting: true,
-      meta: {
-        label: "Name",
-      },
     },
     {
-      accessorKey: "department",
+      key: "department",
+      label: "Department",
       header: ({ column, table }) => (
         <SortableHeader column={column} table={table}>
           Department
         </SortableHeader>
       ),
       enableSorting: true,
-      meta: {
-        label: "Department",
-      },
     },
     {
-      accessorKey: "salary",
+      key: "salary",
+      label: "Salary",
       header: ({ column, table }) => (
         <SortableHeader column={column} table={table}>
           Salary
@@ -220,12 +243,10 @@ function getColumns(): ColumnDef<Employee>[] {
       ),
       cell: ({ row }) => `$${row.original.salary.toLocaleString()}`,
       enableSorting: true,
-      meta: {
-        label: "Salary",
-      },
     },
     {
-      accessorKey: "hireDate",
+      key: "hireDate",
+      label: "Hire Date",
       header: ({ column, table }) => (
         <SortableHeader column={column} table={table}>
           Hire Date
@@ -234,12 +255,8 @@ function getColumns(): ColumnDef<Employee>[] {
       cell: ({ row }) => new Date(row.original.hireDate).toLocaleDateString(),
       enableSorting: true,
       sortingFn: "datetime",
-      meta: {
-        label: "Hire Date",
-      },
     },
-  ];
-}
+  ]);
 
 export default function EmployeesPage() {
   const employees = [
@@ -265,8 +282,6 @@ export default function EmployeesPage() {
       hireDate: "2019-01-10",
     },
   ];
-
-  const columns = useMemo(() => getColumns(), []);
 
   return (
     <div className="container mx-auto p-6">
@@ -294,6 +309,7 @@ import { Trash2, Archive, Mail } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMemo } from "react";
 import { toast } from "sonner";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 
 const orderSchema = z.object({
   id: z.number(),
@@ -305,8 +321,10 @@ const orderSchema = z.object({
 
 type Order = z.infer<typeof orderSchema>;
 
-function getColumns(): ColumnDef<Order>[] {
-  return [
+const columns =
+  ColumnConfig <
+  Order >
+  []([
     {
       id: "select",
       header: ({ table }) => (
@@ -325,24 +343,23 @@ function getColumns(): ColumnDef<Order>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "orderNumber",
-      header: "Order #",
+      key: "orderNumber",
+      label: "Order #",
     },
     {
-      accessorKey: "customer",
-      header: "Customer",
+      key: "customer",
+      label: "Customer",
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      key: "status",
+      label: "Status",
     },
     {
-      accessorKey: "total",
-      header: "Total",
+      key: "total",
+      label: "Total",
       cell: ({ row }) => `$${row.original.total.toFixed(2)}`,
     },
-  ];
-}
+  ]);
 
 function getBulkActions(): BulkAction<Order>[] {
   return [
@@ -423,7 +440,6 @@ export default function OrdersPage() {
     },
   ];
 
-  const columns = useMemo(() => getColumns(), []);
   const bulkActions = useMemo(() => getBulkActions(), []);
 
   return (
@@ -477,6 +493,7 @@ import { z } from "zod";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { ColumnConfig } from "@/lib/table/columnConfig";
 
 const postSchema = z.object({
   id: z.number(),
@@ -488,28 +505,29 @@ const postSchema = z.object({
 
 type Post = z.infer<typeof postSchema>;
 
-function getColumns(): ColumnDef<Post>[] {
-  return [
+const columns =
+  ColumnConfig <
+  postSchema >
+  []([
     {
-      accessorKey: "title",
-      header: "Title",
+      key: "title",
+      label: "Title",
     },
     {
-      accessorKey: "author",
-      header: "Author",
+      key: "author",
+      label: "Author",
     },
     {
-      accessorKey: "publishedAt",
-      header: "Published",
+      key: "publishedAt",
+      label: "Published",
       cell: ({ row }) =>
         new Date(row.original.publishedAt).toLocaleDateString(),
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      key: "status",
+      label: "Status",
     },
-  ];
-}
+  ]);
 
 export default function PostsPage() {
   const { data: posts = [], isLoading } = useQuery({
@@ -519,8 +537,6 @@ export default function PostsPage() {
       return response.json();
     },
   });
-
-  const columns = useMemo(() => getColumns(), []);
 
   if (isLoading) {
     return (
