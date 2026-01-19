@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronDown, Columns3 } from "lucide-react";
 import { Table } from "@tanstack/react-table";
 import { formatColumnLabel } from "@/lib/utils";
-import { format } from "node:path";
 
 interface Props {
   table: Table<any>;

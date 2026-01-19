@@ -2,7 +2,7 @@
 
 import { Suspense, useMemo, useCallback, useState, useEffect } from "react";
 import { z } from "zod";
-import { ColumnDef } from "@tanstack/react-table";
+import { CreateColumnConfig, ColumnConfig } from "@/lib/table/columnConfig";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -45,11 +45,10 @@ import {
   Moon,
   Monitor,
 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { SortableHeader } from "@/components/table/SortableHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/table/DataTable";
 import { useTheme } from "next-themes";
+import { data } from "./data";
 
 const userSchema = z.object({
   id: z.number(),
@@ -80,483 +79,209 @@ const handleDelete = (user: User) => {
   alert(`Deleting user: ${user.name}`);
 };
 
-const EXAMPLE_USERS: User[] = [
+const userColumns: ColumnConfig<User>[] = [
   {
-    id: 1,
-    name: "John Doe",
-    email: "john.doe@example.com",
-    provider: "google",
-    is_admin: true,
-    created_at: "2024-01-15T10:30:00Z",
+    key: "name",
+    label: "Name",
+    cell: ({ row }: any) => (
+      <div className="font-medium">{row.original.name}</div>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+    filterComponent: ({
+      value,
+      onChange,
+      label,
+    }: FilterComponentProps<string>) => (
+      <Input
+        className="max-w-xs mr-4 w-20 md:w-54"
+        placeholder={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    ),
+    enableColumnOrdering: true,
   },
   {
-    id: 2,
-    name: "Jane Smith",
-    email: "jane.smith@example.com",
-    provider: "github",
-    is_admin: false,
-    created_at: "2024-02-20T14:15:00Z",
+    key: "email",
+    label: "Email",
+    cell: ({ row }: any) => (
+      <div className="flex items-center gap-2">
+        <Mail className="h-4 w-4 text-muted-foreground" />
+        {row.original.email}
+      </div>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+    enableColumnOrdering: true,
+    filterComponent: ({
+      value,
+      onChange,
+      label,
+    }: FilterComponentProps<string>) => (
+      <Input
+        className="max-w-xs mr-4 w-20 md:w-54"
+        placeholder={label}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete="off"
+        data-form-type="other"
+        data-lpignore="true"
+        data-1p-ignore="true"
+      />
+    ),
   },
   {
-    id: 3,
-    name: "Bob Johnson",
-    email: "bob.johnson@example.com",
-    provider: "email",
-    is_admin: false,
-    created_at: "2024-03-10T09:45:00Z",
-  },
-  {
-    id: 4,
-    name: "Alice Williams",
-    email: "alice.williams@example.com",
-    provider: "google",
-    is_admin: true,
-    created_at: "2024-01-05T16:20:00Z",
-  },
-  {
-    id: 5,
-    name: "Charlie Brown",
-    email: "charlie.brown@example.com",
-    provider: "github",
-    is_admin: false,
-    created_at: "2024-04-12T11:30:00Z",
-  },
-  {
-    id: 6,
-    name: "Diana Prince",
-    email: "diana.prince@example.com",
-    provider: "google",
-    is_admin: true,
-    created_at: "2024-05-18T13:25:00Z",
-  },
-  {
-    id: 7,
-    name: "Ethan Hunt",
-    email: "ethan.hunt@example.com",
-    provider: "email",
-    is_admin: false,
-    created_at: "2024-06-22T08:50:00Z",
-  },
-  {
-    id: 8,
-    name: "Fiona Gallagher",
-    email: "fiona.gallagher@example.com",
-    provider: "github",
-    is_admin: false,
-    created_at: "2024-07-14T15:40:00Z",
-  },
-  {
-    id: 9,
-    name: "George Miller",
-    email: "george.miller@example.com",
-    provider: "google",
-    is_admin: false,
-    created_at: "2024-08-03T10:15:00Z",
-  },
-  {
-    id: 10,
-    name: "Hannah Montana",
-    email: "hannah.montana@example.com",
-    provider: "email",
-    is_admin: true,
-    created_at: "2024-09-11T14:30:00Z",
-  },
-  {
-    id: 11,
-    name: "Isaac Newton",
-    email: "isaac.newton@example.com",
-    provider: "github",
-    is_admin: false,
-    created_at: "2024-10-05T09:20:00Z",
-  },
-  {
-    id: 12,
-    name: "Julia Roberts",
-    email: "julia.roberts@example.com",
-    provider: "google",
-    is_admin: false,
-    created_at: "2024-11-18T16:45:00Z",
-  },
-  {
-    id: 13,
-    name: "Kevin Hart",
-    email: "kevin.hart@example.com",
-    provider: "email",
-    is_admin: false,
-    created_at: "2024-12-02T11:10:00Z",
-  },
-  {
-    id: 14,
-    name: "Laura Croft",
-    email: "laura.croft@example.com",
-    provider: "github",
-    is_admin: true,
-    created_at: "2024-01-22T13:55:00Z",
-  },
-  {
-    id: 15,
-    name: "Michael Scott",
-    email: "michael.scott@example.com",
-    provider: "google",
-    is_admin: false,
-    created_at: "2024-02-14T08:30:00Z",
-  },
-  {
-    id: 16,
-    name: "Nancy Drew",
-    email: "nancy.drew@example.com",
-    provider: "email",
-    is_admin: false,
-    created_at: "2024-03-25T15:20:00Z",
-  },
-  {
-    id: 17,
-    name: "Oscar Wilde",
-    email: "oscar.wilde@example.com",
-    provider: "github",
-    is_admin: true,
-    created_at: "2024-04-30T10:40:00Z",
-  },
-  {
-    id: 18,
-    name: "Pamela Anderson",
-    email: "pamela.anderson@example.com",
-    provider: "google",
-    is_admin: false,
-    created_at: "2024-05-12T14:15:00Z",
-  },
-  {
-    id: 19,
-    name: "Quentin Tarantino",
-    email: "quentin.tarantino@example.com",
-    provider: "email",
-    is_admin: false,
-    created_at: "2024-06-08T09:50:00Z",
-  },
-  {
-    id: 20,
-    name: "Rachel Green",
-    email: "rachel.green@example.com",
-    provider: "github",
-    is_admin: false,
-    created_at: "2024-07-19T16:25:00Z",
-  },
-  {
-    id: 21,
-    name: "Steven Universe",
-    email: "steven.universe@example.com",
-    provider: "google",
-    is_admin: true,
-    created_at: "2024-08-27T11:35:00Z",
-  },
-  {
-    id: 22,
-    name: "Tina Turner",
-    email: "tina.turner@example.com",
-    provider: "email",
-    is_admin: false,
-    created_at: "2024-09-15T13:10:00Z",
-  },
-  {
-    id: 23,
-    name: "Uma Thurman",
-    email: "uma.thurman@example.com",
-    provider: "github",
-    is_admin: false,
-    created_at: "2024-10-21T10:05:00Z",
-  },
-  {
-    id: 24,
-    name: "Victor Hugo",
-    email: "victor.hugo@example.com",
-    provider: "google",
-    is_admin: false,
-    created_at: "2024-11-09T15:45:00Z",
-  },
-  {
-    id: 25,
-    name: "Wendy Williams",
-    email: "wendy.williams@example.com",
-    provider: "email",
-    is_admin: true,
-    created_at: "2024-12-16T09:30:00Z",
-  },
-];
-
-function getUserColumns(): ColumnDef<User>[] {
-  return [
-    {
-      id: "drag",
-      header: () => null,
-      cell: () => <GripVertical className="text-muted-foreground size-3" />,
-      enableSorting: false,
-      enableHiding: false,
-      enableColumnFilter: false,
-      meta: {
-        excludeFromColumnOrder: true,
-      },
-    },
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      enableColumnFilter: false,
-      meta: {
-        excludeFromColumnOrder: true,
-      },
-    },
-    {
-      accessorKey: "name",
-      header: ({ column, table }) => (
-        <SortableHeader column={column} table={table}>
-          Name
-        </SortableHeader>
-      ),
-      cell: ({ row }) => <div className="font-medium">{row.original.name}</div>,
-      enableSorting: true,
-      enableHiding: true,
-      meta: {
-        enableColumnOrdering: true,
-        FilterComponent: ({
-          value,
-          onChange,
-          label,
-        }: FilterComponentProps<string>) => (
-          <Input
-            className="max-w-xs mr-4 w-20 md:w-54"
-            placeholder={label}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-          />
-        ),
-      },
-    },
-    {
-      accessorKey: "email",
-      header: ({ column, table }) => (
-        <SortableHeader column={column} table={table}>
-          Email
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Mail className="h-4 w-4 text-muted-foreground" />
-          {row.original.email}
-        </div>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-      meta: {
-        enableColumnOrdering: true,
-        FilterComponent: ({
-          value,
-          onChange,
-          label,
-        }: FilterComponentProps<string>) => (
-          <Input
-            className="max-w-xs mr-4 w-20 md:w-54"
-            placeholder={label}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            autoComplete="off"
-            data-form-type="other"
-            data-lpignore="true"
-            data-1p-ignore="true"
-          />
-        ),
-      },
-    },
-    {
-      accessorKey: "provider",
-      header: ({ column, table }) => (
-        <SortableHeader column={column} table={table}>
-          Provider
-        </SortableHeader>
-      ),
-      cell: ({ row }) => (
-        <Badge variant="outline">{row.original.provider}</Badge>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-      meta: {
-        enableColumnOrdering: true,
-        FilterComponent: ({
-          value,
-          onChange,
-          label,
-        }: FilterComponentProps<string>) => {
-          const providers = ["google", "github", "email"];
-
-          return (
-            <Select
-              value={value || "all"}
-              onValueChange={(val) => onChange(val === "all" ? "" : val)}
-            >
-              <SelectTrigger className="max-w-xs mr-4 w-20 md:w-54">
-                <SelectValue placeholder={label} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                {providers.map((provider) => (
-                  <SelectItem key={provider} value={provider}>
-                    <Badge variant="outline">
-                      {provider.charAt(0).toUpperCase() + provider.slice(1)}
-                    </Badge>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          );
-        },
-      },
-    },
-    {
-      accessorKey: "is_admin",
-      header: ({ column, table }) => (
-        <SortableHeader column={column} table={table}>
-          Role
-        </SortableHeader>
-      ),
-      cell: ({ row }) =>
-        row.original.is_admin ? (
-          <Badge className="bg-red-600 text-white">
-            <Shield className="h-3 w-3 mr-1" />
-            Admin
-          </Badge>
-        ) : (
-          <Badge variant="secondary">User</Badge>
-        ),
-      enableSorting: true,
-      enableHiding: true,
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue) return true;
-        const cellValue = row.getValue(columnId) as boolean;
-        return cellValue === (filterValue === "true");
-      },
-      meta: {
-        label: "Role",
-        enableColumnOrdering: true,
-        FilterComponent: ({
-          value,
-          onChange,
-          label,
-        }: FilterComponentProps<boolean>) => (
-          <Select
-            value={value || "all"}
-            onValueChange={(val) => onChange(val === "all" ? "" : val)}
-          >
-            <SelectTrigger className="max-w-xs mr-4 w-20 md:w-54">
-              <SelectValue placeholder={label} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="true">
-                <Badge className="bg-red-600 text-white">
-                  <Shield className="h-3 w-3 mr-1" />
-                  Admin
+    key: "provider",
+    label: "Provider",
+    cell: ({ row }: any) => (
+      <Badge variant="outline">{row.original.provider}</Badge>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+    enableColumnOrdering: true,
+    filterComponent: ({
+      value,
+      onChange,
+      label,
+    }: FilterComponentProps<string>) => {
+      const providers = ["google", "github", "email"];
+      return (
+        <Select
+          value={value || "all"}
+          onValueChange={(val) => onChange(val === "all" ? "" : val)}
+        >
+          <SelectTrigger className="max-w-xs mr-4 w-20 md:w-54">
+            <SelectValue placeholder={label} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            {providers.map((provider) => (
+              <SelectItem key={provider} value={provider}>
+                <Badge variant="outline">
+                  {provider.charAt(0).toUpperCase() + provider.slice(1)}
                 </Badge>
               </SelectItem>
-              <SelectItem value="false">
-                <Badge variant="secondary">User</Badge>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        ),
-      },
+            ))}
+          </SelectContent>
+        </Select>
+      );
     },
-    {
-      accessorKey: "created_at",
-      header: ({ column, table }) => (
-        <SortableHeader column={column} table={table}>
-          Created At
-        </SortableHeader>
+  },
+  {
+    key: "is_admin",
+    label: "Role",
+    cell: ({ row }: any) =>
+      row.original.is_admin ? (
+        <Badge className="bg-red-600 text-white">
+          <Shield className="h-3 w-3 mr-1" />
+          Admin
+        </Badge>
+      ) : (
+        <Badge variant="secondary">User</Badge>
       ),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Calendar className="h-4 w-4" />
-          {formatDate(row.original.created_at)}
-        </div>
-      ),
-      enableSorting: true,
-      enableHiding: true,
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue) return true;
-        const cellValue = new Date(row.getValue(columnId) as string);
-        const filterDate = new Date(filterValue);
-        return (
-          cellValue.getFullYear() === filterDate.getFullYear() &&
-          cellValue.getMonth() === filterDate.getMonth() &&
-          cellValue.getDate() === filterDate.getDate()
-        );
-      },
-      meta: {
-        enableColumnOrdering: true,
-        FilterComponent: ({
-          onChange,
-          label,
-          parsedValue,
-        }: FilterComponentProps<Date>) => (
-          <DatePicker
-            date={parsedValue || undefined}
-            onDateChange={(date) => {
-              if (date) {
-                onChange(date.toISOString());
-              } else {
-                onChange("");
-              }
-            }}
-            placeholder={label}
-            className="max-w-xs mr-4 w-20 md:w-54"
-          />
-        ),
-      },
+    enableSorting: true,
+    enableHiding: true,
+    filterFn: (row: any, columnId: string, filterValue: string) => {
+      if (!filterValue) return true;
+      const cellValue = row.getValue(columnId) as boolean;
+      return cellValue === (filterValue === "true");
     },
-    {
-      id: "actions",
-      header: () => <div className="text-right">Actions</div>,
-      cell: ({ row }) => (
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handleEdit(row.original)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => handleDelete(row.original)}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-      meta: {
-        excludeFromColumnOrder: true,
-      },
+    enableColumnOrdering: true,
+    filterComponent: ({
+      value,
+      onChange,
+      label,
+    }: FilterComponentProps<boolean>) => (
+      <Select
+        value={value || "all"}
+        onValueChange={(val) => onChange(val === "all" ? "" : val)}
+      >
+        <SelectTrigger className="max-w-xs mr-4 w-20 md:w-54">
+          <SelectValue placeholder={label} />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="true">
+            <Badge className="bg-red-600 text-white">
+              <Shield className="h-3 w-3 mr-1" />
+              Admin
+            </Badge>
+          </SelectItem>
+          <SelectItem value="false">
+            <Badge variant="secondary">User</Badge>
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    ),
+  },
+  {
+    key: "created_at",
+    label: "Created At",
+    cell: ({ row }: any) => (
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Calendar className="h-4 w-4" />
+        {formatDate(row.original.created_at)}
+      </div>
+    ),
+    enableSorting: true,
+    enableHiding: true,
+    filterFn: (row: any, columnId: string, filterValue: string) => {
+      if (!filterValue) return true;
+      const cellValue = new Date(row.getValue(columnId) as string);
+      const filterDate = new Date(filterValue);
+      return (
+        cellValue.getFullYear() === filterDate.getFullYear() &&
+        cellValue.getMonth() === filterDate.getMonth() &&
+        cellValue.getDate() === filterDate.getDate()
+      );
     },
-  ];
-}
+    enableColumnOrdering: true,
+    filterComponent: ({
+      onChange,
+      label,
+      parsedValue,
+    }: FilterComponentProps<Date>) => (
+      <DatePicker
+        date={parsedValue || undefined}
+        onDateChange={(date) => {
+          if (date) {
+            onChange(date.toISOString());
+          } else {
+            onChange("");
+          }
+        }}
+        placeholder={label}
+        className="max-w-xs mr-4 w-20 md:w-54"
+      />
+    ),
+  },
+  {
+    id: "actions",
+    header: () => <div className="text-right">Actions</div>,
+    cell: ({ row }: any) => (
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handleEdit(row.original)}
+        >
+          Edit
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => handleDelete(row.original)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+    ),
+    enableSorting: false,
+    enableHiding: false,
+    excludeFromColumnOrder: true,
+  },
+];
 
 function CustomDeleteConfirm({
   open,
@@ -711,8 +436,15 @@ function getBulkActions(): BulkAction<User>[] {
 }
 
 function DemoPageContent() {
-  const columns = useMemo(() => getUserColumns(), []);
   const bulkActions = useMemo(() => getBulkActions(), []);
+  const columns = useMemo(
+    () =>
+      CreateColumnConfig<User>(userColumns, {
+        withBulkActions: !!bulkActions,
+        enableRowOrdering: true,
+      }),
+    [bulkActions]
+  );
   const { theme, setTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -818,7 +550,7 @@ function DemoPageContent() {
             <CardTitle className="flex items-center justify-between">
               <span>User Management Demo</span>
               <Badge variant="outline" className="font-normal">
-                {EXAMPLE_USERS.length} users
+                {data.length} users
               </Badge>
             </CardTitle>
             <p className="text-sm text-muted-foreground">
@@ -829,7 +561,7 @@ function DemoPageContent() {
           <CardContent>
             <DataTable
               schema={userSchema}
-              data={EXAMPLE_USERS}
+              data={data}
               columns={columns}
               bulkActions={bulkActions}
               enableRowOrdering={true}

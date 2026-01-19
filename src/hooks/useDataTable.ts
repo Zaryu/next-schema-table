@@ -124,6 +124,13 @@ export function useDataTable<T>(
       setParams({ filterColumn: null, filter: null }, { history: "replace" });
       return defaultFilterColumn;
     }
+    // Wenn filterColumn dem Default entspricht, entferne es aus den Params
+    if (rawFilterColumn === defaultFilterColumn) {
+      if (params.filterColumn) {
+        setParams({ filterColumn: null }, { history: "replace" });
+      }
+      return defaultFilterColumn;
+    }
     return rawFilterColumn || defaultFilterColumn;
   }, [params.filterColumn, validColumnIds, defaultFilterColumn, setParams]);
 
@@ -245,9 +252,13 @@ export function useDataTable<T>(
 
   const handleFilterColumnChange = (value: string) => {
     if (value && isValidColumnId(value, validColumnIds)) {
-      setParams({ filterColumn: value, filter: null, page: 1 });
+      if (value === defaultFilterColumn) {
+        setParams({ filterColumn: null, filter: null, page: 1 });
+      } else {
+        setParams({ filterColumn: value, filter: null, page: 1 });
+      }
     } else {
-      setParams({ filterColumn: defaultFilterColumn, filter: null, page: 1 });
+      setParams({ filterColumn: null, filter: null, page: 1 });
     }
   };
 

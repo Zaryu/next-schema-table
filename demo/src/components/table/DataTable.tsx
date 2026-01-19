@@ -22,7 +22,7 @@ type DataTableProps<Schema extends z.ZodObject<any>> = {
   limits?: number[];
   enableFilter?: boolean;
   bulkActions?: BulkAction<z.infer<Schema>>[];
-  TableActions?: (table: Table<z.infer<Schema>>) => React.ReactNode;
+  tableActions?: (table: Table<z.infer<Schema>>) => React.ReactNode;
   labels?: {
     table?: {
       noData: string;
@@ -42,7 +42,10 @@ type DataTableProps<Schema extends z.ZodObject<any>> = {
   };
   enableRowOrdering?: boolean;
   onRowOrderChange?: (newData: z.infer<Schema>[]) => void;
+  enableColumnOrdering?: boolean;
   onColumnOrderChange?: (newColumnOrder: string[]) => void;
+  enableSorting?: boolean;
+  enableFilters?: boolean;
 };
 
 export function DataTable<Schema extends z.ZodObject<any>>({
@@ -50,12 +53,12 @@ export function DataTable<Schema extends z.ZodObject<any>>({
   columns,
   schema,
   limits,
-  enableFilter = true,
   enableRowOrdering = false,
   onRowOrderChange,
   onColumnOrderChange,
+  enableFilter = true,
   bulkActions,
-  TableActions,
+  tableActions,
   labels,
 }: DataTableProps<Schema>) {
   const sortableId = useId();
@@ -110,7 +113,7 @@ export function DataTable<Schema extends z.ZodObject<any>>({
               schema={schema}
             />
           )}
-          {TableActions && TableActions(table)}
+          {tableActions && tableActions(table)}
         </div>
         <div className="hidden lg:flex items-center gap-2">
           <ColumnVisibilityDropdown
@@ -137,7 +140,7 @@ export function DataTable<Schema extends z.ZodObject<any>>({
                 schema={schema}
               />
             )}
-            {TableActions && TableActions(table)}
+            {tableActions && tableActions(table)}
           </MobileActionsMenu>
           <MobileSettingsMenu>
             <ColumnVisibilityDropdown

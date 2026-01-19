@@ -168,5 +168,8 @@ declare module "@tanstack/react-table" {
   interface TableMeta<TData> {
     bulkActions?: BulkAction<TData>[];
     enableRowOrdering?: boolean;
+    enableColumnOrdering?: boolean;
+    enableFilters?: boolean;
+    enableSorting?: boolean;
   }
 }
