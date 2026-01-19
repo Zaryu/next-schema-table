@@ -1,4 +1,5 @@
-export const data = [
+// 25 Beispiel-Datensätze als Vorlage
+const baseData = [
   {
     id: 1,
     name: "John Doe",
@@ -200,3 +201,19 @@ export const data = [
     created_at: "2024-12-16T09:30:00Z",
   },
 ];
+
+// 250 Datensätze generieren
+export const data = Array.from({ length: 1500 }, (_, i) => {
+  const base = baseData[i % baseData.length];
+  // ID eindeutig, Name und Email leicht variieren, Datum pro Block verschieben
+  return {
+    ...base,
+    id: i + 1,
+    name: `${base.name} ${Math.floor(i / baseData.length) + 1}`,
+    email: base.email.replace("@", `.${Math.floor(i / baseData.length) + 1}@`),
+    created_at: new Date(
+      new Date(base.created_at).getTime() +
+        1000 * 60 * 60 * 24 * 30 * Math.floor(i / baseData.length)
+    ).toISOString(),
+  };
+});

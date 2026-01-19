@@ -88,6 +88,11 @@ const userColumns: ColumnConfig<User>[] = [
     ),
     enableSorting: true,
     enableHiding: true,
+    filterFn: (row: any, columnId: string, filterValue: string) => {
+      if (!filterValue) return true;
+      const cellValue = row.getValue(columnId) as string;
+      return cellValue.toLowerCase().includes(filterValue.toLowerCase());
+    },
     filterComponent: ({
       value,
       onChange,
@@ -114,6 +119,11 @@ const userColumns: ColumnConfig<User>[] = [
     enableSorting: true,
     enableHiding: true,
     enableColumnOrdering: true,
+    filterFn: (row: any, columnId: string, filterValue: string) => {
+      if (!filterValue) return true;
+      const cellValue = row.getValue(columnId) as string;
+      return cellValue.toLowerCase().includes(filterValue.toLowerCase());
+    },
     filterComponent: ({
       value,
       onChange,
@@ -140,6 +150,10 @@ const userColumns: ColumnConfig<User>[] = [
     enableSorting: true,
     enableHiding: true,
     enableColumnOrdering: true,
+    filterFn: (row: any, columnId: string, filterValue: string) => {
+      if (!filterValue) return true;
+      return row.getValue(columnId) === filterValue;
+    },
     filterComponent: ({
       value,
       onChange,
