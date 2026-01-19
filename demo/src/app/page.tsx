@@ -441,7 +441,7 @@ function DemoPageContent() {
     () =>
       CreateColumnConfig<User>(userColumns, {
         withBulkActions: !!bulkActions,
-        enableRowOrdering: false,
+        enableRowOrdering: true,
       }),
     [bulkActions]
   );
@@ -564,7 +564,7 @@ function DemoPageContent() {
               data={data}
               columns={columns}
               bulkActions={bulkActions}
-              enableRowOrdering={false}
+              enableRowOrdering={true}
               onRowOrderChange={handleRowOrderChange}
               onColumnOrderChange={handleColumnOrderChange}
             />
